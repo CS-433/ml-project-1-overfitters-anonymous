@@ -1,4 +1,5 @@
 # Contains all functions needed for project 1
+<<<<<<< Updated upstream
 
 def least_squares(y, tx):
     return "okok"
@@ -327,3 +328,94 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_, hessian_w = True):
     
 
 # END Max area #######################################################
+=======
+import numpy as np
+
+def compute_MSE(error):
+    """
+    Compute the Mean Squared Error (MSE)
+
+    Args:
+       - error: numpy array of shape=(N, ), N is the number of samples.
+
+    Returns:
+       - MSE: the value of the loss (a scalar), depending on the given input error
+    """
+    # Computing the MSE loss
+    MSE_loss = 0.5*np.mean(error**2)
+    
+    return MSE_loss
+
+#############
+
+def compute_loss(y, tx, w):
+    """
+    Calculate the loss using MSE.
+
+    Args:
+       - y: numpy array of shape=(N, ), N is the number of samples.
+       - tx: shape=(N,D), D is the number of features.
+       - w: optimal weights, numpy array of shape(D,), D is the number of features.
+
+    Returns:
+       - loss: the value of the loss (a scalar), corresponding to the input parameters w.
+    """
+    # Error vector 
+    error = y - tx.dot(w)
+
+    return compute_MSE(error)
+
+##############
+
+def least_squares(y, tx):
+    """
+    Calculate the least squares solution.
+    returns optimal weights and mse.
+
+    Args:
+       - y: numpy array of shape (N,), N is the number of samples.
+       - tx: numpy array of shape (N,D), D is the number of features.
+
+    Returns:
+       - w: optimal weights, numpy array of shape(D,), D is the number of features.
+       - loss: MSE (scalar)
+    """
+    # constructing & solving the system Aw=b
+    A = tx.T.dot(tx)
+    b = tx.T.dot(y)    
+    w = np.linalg.solve(A, b)
+    
+    # computing the MSE (loss)
+    error = y - tx.dot(w)
+    loss = compute_MSE(error)
+
+    return w, loss
+
+
+#############
+
+def ridge_regression(y, tx, lambda_):
+    """
+    Implement ridge regression.
+
+    Args:
+       - y: numpy array of shape (N,), N is the number of samples.
+       - tx: numpy array of shape (N,D), D is the number of features.
+       - lambda_: scalar.
+
+    Returns:
+       - w: optimal weights, numpy array of shape(D,), D is the number of features.
+       - loss: MSE (scalar)
+    """
+    # Constructing & and solving the linear system
+    m = (tx.T.dot(tx)).shape[0] # Matrix size
+    A = tx.T.dot(tx)+2*m*lambda_*np.eye(m)
+    b = tx.T.dot(y)
+    w = np.linalg.solve(A, b)
+
+    # computing the MSE (loss)
+    error = y - tx.dot(w)
+    loss = compute_MSE(error)
+
+    return w, loss
+>>>>>>> Stashed changes
