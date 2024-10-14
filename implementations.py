@@ -1,15 +1,5 @@
 # Contains all functions needed for project 1
 
-def least_squares(y, tx):
-    return "okok"
-
-
-
-
-
-
-
-
 # Max area ##########################################################
 import numpy as np
 
@@ -34,7 +24,7 @@ def sigmoid(t):
     return np.e**t/(1+np.e**t)
 
 
-def calculate_loss(y, tx, w):
+def calculate_loss_log(y, tx, w):
     """compute the cost by negative log likelihood.
 
     Args:
@@ -71,7 +61,7 @@ def calculate_loss(y, tx, w):
 
 # Normal Logistic Regression #######################
 
-def calculate_gradient(y, tx, w):
+def calculate_gradient_log(y, tx, w):
     """compute the gradient of loss.
 
     Args:
@@ -98,7 +88,7 @@ def calculate_gradient(y, tx, w):
 
 
 
-def calculate_hessian(y, tx, w):
+def calculate_hessian_log(y, tx, w):
     """return the Hessian of the loss function.
 
     Args:
@@ -162,14 +152,14 @@ def learning_by_newton_method(y, tx, w, gamma):
     """
     
     # Calculating loss, gradient and hessian
-    loss = calculate_loss(y, tx, w)
-    gradient = calculate_gradient(y, tx, w)
-    hessian = calculate_hessian(y, tx, w)
+    loss = calculate_loss_log(y, tx, w)
+    gradient = calculate_gradient_log(y, tx, w)
+    hessian = calculate_hessian_log(y, tx, w)
     
     # Calculate w_t+1 using Newtons method
     w -= gamma * np.linalg.inv(hessian) @ gradient
     
-    return loss, w
+    return w, loss
 
 
 
@@ -188,7 +178,7 @@ def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
         
     Returns: 
         w:         shape=(D+1, 1)
-        losses:    array with losses throughout iteration
+        loss:      loss at final w
         
     Example:
     w_final, losses = logistic_regression(y, tx, initial_w, max_iter, gamma)
@@ -201,10 +191,7 @@ def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
     # start the logistic regression
     for iter in range(max_iter):
         # get loss and update w.
-        loss, w = learning_by_newton_method(y, tx, w, gamma)
-        # log info
-        if iter % 100 == 0:
-            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        w, loss = learning_by_newton_method(y, tx, w, gamma)
         losses.append(loss)
         
         # converge criterion
@@ -213,7 +200,7 @@ def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
             
     print("loss={l}".format(l=calculate_loss(y, tx, w)))
     
-    return w, losses
+    return w, loss
 
 
 
@@ -322,8 +309,193 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_, hessian_w = True):
     else:
         w -= gamma * gradient
     
-    return loss, w
+    return w, loss
     
     
 
 # END Max area #######################################################
+
+
+
+
+# Jeremyyys area ######## Be careful!!! Do Not ENTER UNLESS JEREMY!!##########
+import numpy as np
+
+def compute_MSE(error):
+    """
+    Compute the Mean Squared Error (MSE)
+
+    Args:
+       - error: numpy array of shape=(N, ), N is the number of samples.
+
+    Returns:
+       - MSE: the value of the loss (a scalar), depending on the given input error
+    """
+    # Computing the MSE loss
+    MSE_loss = 0.5*np.mean(error**2)
+    
+    return MSE_loss
+
+#############
+
+def compute_loss(y, tx, w):
+    """
+    Calculate the loss using MSE.
+
+    Args:
+       - y: numpy array of shape=(N, ), N is the number of samples.
+       - tx: shape=(N,D), D is the number of features.
+       - w: optimal weights, numpy array of shape(D,), D is the number of features.
+
+    Returns:
+       - loss: the value of the loss (a scalar), corresponding to the input parameters w.
+    """
+    # Error vector 
+    error = y - tx.dot(w)
+
+    return compute_MSE(error)
+
+##############
+
+def least_squares(y, tx):
+    """
+    Calculate the least squares solution.
+    returns optimal weights and mse.
+
+    Args:
+       - y: numpy array of shape (N,), N is the number of samples.
+       - tx: numpy array of shape (N,D), D is the number of features.
+
+    Returns:
+       - w: optimal weights, numpy array of shape(D,), D is the number of features.
+       - loss: MSE (scalar)
+    """
+    # constructing & solving the system Aw=b
+    A = tx.T.dot(tx)
+    b = tx.T.dot(y)    
+    w = np.linalg.solve(A, b)
+    
+    # computing the MSE (loss)
+    error = y - tx.dot(w)
+    loss = compute_MSE(error)
+
+    return w, loss
+
+
+#############
+
+def ridge_regression(y, tx, lambda_):
+    """
+    Implement ridge regression.
+
+    Args:
+       - y: numpy array of shape (N,), N is the number of samples.
+       - tx: numpy array of shape (N,D), D is the number of features.
+       - lambda_: scalar.
+
+    Returns:
+       - w: optimal weights, numpy array of shape(D,), D is the number of features.
+       - loss: MSE (scalar)
+    """
+    # Constructing & and solving the linear system
+    m = (tx.T.dot(tx)).shape[0] # Matrix size
+    A = tx.T.dot(tx)+2*m*lambda_*np.eye(m)
+    b = tx.T.dot(y)
+    w = np.linalg.solve(A, b)
+
+    # computing the MSE (loss)
+    error = y - tx.dot(w)
+    loss = compute_MSE(error)
+
+    return w, loss
+
+
+import numpy as np
+
+def compute_mse(e):
+    # computes the Mean Squared Error
+    return 0.5*np.mean(e**2)
+
+def compute_mae(e):
+    # computes the Mean Absolute Error
+    return 0.5*np.mean(np.abs(e))
+
+def compute_loss(y, tx, w):
+    e = y - tx.dot(w)
+    return compute_mse(e)
+
+def compute_grad(y, tx, w):
+    # computes the gradient at w.
+    e = y - tx.dot(w) # the error vector
+    gradient = (-1/len(y))*tx.T.dot(e)
+    return gradient, e
+
+def compute_stoch_grad(y, tx, w):
+    e = y - tx.dot(w)
+    gradient = -tx.T.dot(e)
+    return gradient
+
+
+def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-10, verbose=False):
+
+    # compute the first step
+    # w(t+1) (i.e. w at step t+1) is written w_next, and w(t) (i.e. w at step t) is written w. 
+    w = initial_w
+    grad, e = compute_grad(y, tx, w)
+    loss = compute_mse(e)
+    w_next = w - gamma*grad
+
+    # make steps in the opposite direction of the gradient and stops if the parameters does not vary anymore ( i.e. we reached a minimum ), or if the maximum iteration number is reached. 
+    step_count = 0 # the counter of steps
+    while step_count < max_iters and abs(w - w_next) > tol : # we could also instead check the condition abs(grad) > tol since we expect grad = 0 at minimum.
+        step_count += 1
+        w = w_next # w(t) is the w(t+1) of the step before. 
+        grad, e = compute_grad(y, tx, w)
+        loss = compute_mse(e)
+        w_next = w - gamma*grad
+        if verbose:
+            print("GD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=step_count, ti=max_iters - 1, l=loss, w0=w_next[0], w1=w_next[1]))
+    return loss, w_next
+
+
+def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma, verbose=False) :
+
+    w = initial_w
+
+    for n in range(max_iters):
+
+        index = np.random.randint(0, len(y)) # pick an index at random ( batch of size 1 )
+        grad = compute_stoch_grad(y[index], tx[index], w) # compute the gradient using that index
+        w = w - gamma * grad # updating w
+        loss = compute_loss(y, tx, w) # the error is computed with the entire dataset, not just the one we picked when computing gradient
+
+        if verbose:
+            print("SGD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=n, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+    return loss, w
+
+
+
+""" def stochastic_gradient_descent(y, tx, initial_w, max_iters, gamma, tol=1e-10, verbose=False) :
+    # with a stopping condition. However, 'stochastic noise' makes this condition never fulfield, so let's forget this.
+    # first step
+    w = initial_w
+    index = np.random.randint(0, len(y)) # pick an index at random ( batch of size 1 )
+    grad, _ = compute_stoch_grad(y[index], tx[index], w) # compute the gradient using that index
+    w_next = w - gamma * grad # updating w
+    loss = compute_loss(y, tx, w) # the error is computed with the entire dataset, not just the one we picked when computing gradient
+
+    n = 0 # the step count
+    while n < max_iters and np.linalg.norm(w_next - w) > tol:
+        n = n + 1
+        w = w_next
+
+        index = np.random.randint(0, len(y))
+        grad = compute_stoch_grad(y[index], tx[index], w)
+        w_next = w - gamma * grad
+        loss = compute_loss(y, tx, w)
+
+        if verbose:
+            print("SGD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=n, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+
+    return loss, w """
+
