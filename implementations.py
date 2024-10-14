@@ -1,4 +1,11 @@
 # Contains all functions needed for project 1
+<<<<<<< HEAD
+=======
+def least_squares(y, tx):
+    return "okok"
+
+# oui oui baguette
+>>>>>>> 70584259115c77178fa9e812e915c4f83b27a130
 
 
 
@@ -35,4 +42,9 @@ def logistic_regression(y, tx, w):
     raise NotImplementedError
 
 
+<<<<<<< HEAD
 test(logistic_regression)
+=======
+test(logistic_regression)
+>>>>>>> 6691f5a (Added function head of logistic_regression(y, tx, w))
+>>>>>>> 70584259115c77178fa9e812e915c4f83b27a130
