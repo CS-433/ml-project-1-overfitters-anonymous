@@ -193,6 +193,7 @@ def learning_by_newton_method(y, tx, w, gamma):
     
     return w, loss
 
+
 def penalized_logistic_regression(y, tx, w, lambda_):
     """return the loss and gradient.
 
@@ -247,6 +248,7 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     
     
     return loss, gradient, hessian
+
 
 def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_, hessian_w = False):
     """
