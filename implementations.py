@@ -193,11 +193,8 @@ def learning_by_newton_method(y, tx, w, gamma):
     
     return w, loss
 
-#### Max still need to do ###
-
-
 def penalized_logistic_regression(y, tx, w, lambda_):
-    """return the loss, gradient and hessian matrix at given w.
+    """return the loss and gradient.
 
     Args:
         y:  shape=(N, 1)
@@ -208,13 +205,12 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     Returns:
         loss: scalar number
         gradient: shape=(D, 1)
-        hessian: shape=(D, D)
 
     >>> y = np.c_[[0., 1.]]
     >>> tx = np.arange(6).reshape(2, 3)
     >>> w = np.array([[0.1], [0.2], [0.3]])
     >>> lambda_ = 0.1
-    >>> loss, gradient, hessian = penalized_logistic_regression(y, tx, w, lambda_)
+    >>> loss, gradient = penalized_logistic_regression(y, tx, w, lambda_)
     >>> round(loss, 8)
     0.62137268
     >>> gradient
@@ -225,21 +221,15 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     
     # Calculate log-loss L
     
-    # Loss with regularization (excluding bias term)
-    #loss =  - 1 / len(y) * L.item() + (lambda_ / 2) * (w[1:].T @ w[1:]).item()
-    
-    
     # New vectorized loss computation
     sig_pred = sigmoid(tx @ w)
     loss = -1 / len(y) * (y.T @ np.log(sig_pred) + (1 - y).T @ np.log(1 - sig_pred)).item() + (lambda_ / 2) * (w[1:].T @ w[1:]).item()
     
     
     # Gradient with regularization (excluding bias term)
-    
     reg_term = np.copy(w)
     reg_term[0] = 0  # No regularization for the bias term
     gradient = 1 / len(y) * tx.T @ (sigmoid(tx @ w) - y) + lambda_ * reg_term
-    
     
     #Calculating the hessian
     #Creating S matrix with sigma values in diagonale
@@ -251,16 +241,14 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     
     # Matrix with sig (1- sig) in diagonale
     S = np.diag(sigmas)
-    
-    hess_regul = np.identity(len(tx[0])) # Regularisation term for hessian matrix
+    hess_regul = np.identity(len(tx[0]))
     hess_regul[0, 0] = 0 # Not regularizing the w0
     hessian =  1 / len(y) * tx.T @ S @ tx + hess_regul
     
     
     return loss, gradient, hessian
-    
 
-def learning_by_penalized_gradient(y, tx, w, gamma, lambda_, hessian_w = True):
+def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_, hessian_w = False):
     """
     Do one step of gradient descent, using the penalized logistic regression.
     Return the loss and updated w.
@@ -292,17 +280,12 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_, hessian_w = True):
     """
     
     loss, gradient, hessian = penalized_logistic_regression(y, tx, w, lambda_)
-    
     if hessian_w == True:
         w -= gamma * np.linalg.inv(hessian) @ gradient
     else:
         w -= gamma * gradient
     
     return w, loss
-    
-
-#### Max still need to do ###
-
 
 #### Main Functions ##################
 
@@ -432,6 +415,44 @@ def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
     
     return w, loss
 
+
+def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
+    """
+    Do logistic regression with regulatization until the threshold or max_iter is reached.
+    
+    Args:
+        y:            shape=(N, 1)
+        tx:           shape=(N, D+1)
+        initial_w:    shape=(D+1, 1)
+        max_iter:     int
+        gamma:        float
+        
+    Returns: 
+        w:         shape=(D+1, 1)
+        loss:      loss at final w
+        
+    Example:
+    w_final, losses = reg_logistic_regression(y, tx, initial_w, max_iter, gamma)
+    
+    
+    """
+    # init parameters
+    threshold = 1e-8
+    losses = []
+
+    # build w
+    w = initial_w
+
+    # start the logistic regression
+    for iter in range(max_iters):
+        # get loss and update w.
+        w, loss = log_learning_by_penalized_gradient(y.reshape(-1, 1), tx, w, gamma, lambda_)
+        # converge criterion
+        losses.append(loss)
+        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
+            break
+    
+    return w, loss
 
 
 
