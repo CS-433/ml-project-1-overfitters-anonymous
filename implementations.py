@@ -52,21 +52,8 @@ def compute_stoch_grad(y, tx, w):
 
 
 def sigmoid(t):
-    """apply sigmoid function on t.
-
-    Args:
-        t: scalar or numpy array
-
-    Returns:
-        scalar or numpy array
-
-    >>> sigmoid(np.array([0.1]))
-    array([0.52497919])
-    >>> sigmoid(np.array([0.1, 0.1]))
-    array([0.52497919, 0.52497919])
-    """
-    
-    return np.e**t/(1+np.e**t)
+    t = np.clip(t, -500, 500)  # Clipping to avoid overflow
+    return 1 / (1 + np.exp(-t))
 
 
 def calculate_loss_log(y, tx, w):
@@ -234,20 +221,21 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     
     #Calculating the hessian
     #Creating S matrix with sigma values in diagonale
-    sigmas = []
-    for xi in tx:
-        sig_xi = sigmoid(xi.T @ w)
-        temp = sig_xi * (1 - sig_xi)
-        sigmas.append(temp.item())
+    #sigmas = []
+    #for xi in tx:
+    #    sig_xi = sigmoid(xi.T @ w)
+    #    temp = sig_xi * (1 - sig_xi)
+    #    sigmas.append(temp.item())
     
+
     # Matrix with sig (1- sig) in diagonale
-    S = np.diag(sigmas)
-    hess_regul = np.identity(len(tx[0]))
-    hess_regul[0, 0] = 0 # Not regularizing the w0
-    hessian =  1 / len(y) * tx.T @ S @ tx + hess_regul
+    #S = np.diag(sigmas)
+    #hess_regul = np.identity(len(tx[0]))
+    #hess_regul[0, 0] = 0 # Not regularizing the w0
+    #hessian =  1 / len(y) * tx.T @ S @ tx + hess_regul
     
     
-    return loss, gradient, hessian
+    return loss, gradient #, hessian
 
 
 def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_, hessian_w = False):
@@ -281,11 +269,8 @@ def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_, hessian_w = Fal
            [0.24228716]])
     """
     
-    loss, gradient, hessian = penalized_logistic_regression(y, tx, w, lambda_)
-    if hessian_w == True:
-        w -= gamma * np.linalg.inv(hessian) @ gradient
-    else:
-        w -= gamma * gradient
+    loss, gradient = penalized_logistic_regression(y, tx, w, lambda_)
+    w -= gamma * gradient
     
     return w, loss
 
