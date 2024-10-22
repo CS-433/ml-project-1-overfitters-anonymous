@@ -205,9 +205,7 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     array([[-0.08370763],
            [ 0.2467104 ],
            [ 0.57712843]])
-    """
-    
-    # Calculate log-loss L
+    """    
     
     # New vectorized loss computation
     sig_pred = sigmoid(tx @ w)
@@ -215,30 +213,16 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     
     
     # Gradient with regularization (excluding bias term)
+    
     reg_term = np.copy(w)
     reg_term[0] = 0  # No regularization for the bias term
     gradient = 1 / len(y) * tx.T @ (sigmoid(tx @ w) - y) + lambda_ * reg_term
     
-    #Calculating the hessian
-    #Creating S matrix with sigma values in diagonale
-    #sigmas = []
-    #for xi in tx:
-    #    sig_xi = sigmoid(xi.T @ w)
-    #    temp = sig_xi * (1 - sig_xi)
-    #    sigmas.append(temp.item())
     
-
-    # Matrix with sig (1- sig) in diagonale
-    #S = np.diag(sigmas)
-    #hess_regul = np.identity(len(tx[0]))
-    #hess_regul[0, 0] = 0 # Not regularizing the w0
-    #hessian =  1 / len(y) * tx.T @ S @ tx + hess_regul
-    
-    
-    return loss, gradient #, hessian
+    return loss, gradient
 
 
-def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_, hessian_w = False):
+def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     """
     Do one step of gradient descent, using the penalized logistic regression.
     Return the loss and updated w.
@@ -269,10 +253,11 @@ def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_, hessian_w = Fal
            [0.24228716]])
     """
     
-    loss, gradient = penalized_logistic_regression(y, tx, w, lambda_)
+    loss, gradient = penalized_logistic_regression(y.reshape(-1, 1), tx, w, lambda_)
     w -= gamma * gradient
     
-    return w, loss
+    return loss, w
+
 
 #### Main Functions ##################
 
@@ -404,36 +389,16 @@ def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
 
 
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-    """
-    Do logistic regression with regulatization until the threshold or max_iter is reached.
-    
-    Args:
-        y:            shape=(N, 1)
-        tx:           shape=(N, D+1)
-        initial_w:    shape=(D+1, 1)
-        max_iter:     int
-        gamma:        float
-        
-    Returns: 
-        w:         shape=(D+1, 1)
-        loss:      loss at final w
-        
-    Example:
-    w_final, losses = reg_logistic_regression(y, tx, initial_w, max_iter, gamma)
-    
-    
-    """
-    # init parameters
     threshold = 1e-8
     losses = []
 
-    # build w
+    # build tx
     w = initial_w
 
     # start the logistic regression
     for iter in range(max_iters):
         # get loss and update w.
-        w, loss = log_learning_by_penalized_gradient(y.reshape(-1, 1), tx, w, gamma, lambda_)
+        loss, w = log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
         # converge criterion
         losses.append(loss)
         if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
