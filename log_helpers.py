@@ -1,41 +1,49 @@
 import pandas as pd
 import numpy as np
 
-def load_csv_data(X_path, y_path, frac=1):
+def load_csv_data(X_path, y_path=None, frac=1):
     """
-    Loads X (features) and y (labels) from two CSV files, 
-    converts -1, 1 targets to 0, 1 targets, and returns only a fraction of the data.
-    
+    Loads X (features) and optionally y (labels) from CSV files. 
+    Converts -1, 1 targets to 0, 1 targets if y is provided, and returns only a fraction of the data.
+
     Parameters:
         X_path (str): Path to the CSV file containing the X data (features).
-        y_path (str): Path to the CSV file containing the y data (labels).
+        y_path (str, optional): Path to the CSV file containing the y data (labels). Default is None for test data.
         frac (float): Fraction of the data to return, between 0 and 1. Default is 1.0 (100% of the data).
     
     Returns:
         X_df (pd.DataFrame): DataFrame of the feature data (X) with columns as features.
-        y_df (pd.DataFrame): DataFrame of the target labels (y) with columns as labels (converted to 0 and 1).
+        y_df (pd.DataFrame or None): DataFrame of the target labels (y) if provided, otherwise None.
     """
     # Load the X (features) data from the CSV file
     X_df = pd.read_csv(X_path)
+
+    # If y_path is provided, load the y (target) data
+    if y_path is not None:
+        y_df = pd.read_csv(y_path)
+        # Optional: Merge both DataFrames on 'Id' column to ensure correct alignment
+        data = pd.merge(X_df, y_df, on='Id')
+        
+        # Select only a fraction of the data if needed
+        if 0 < frac < 1:
+            data = data.sample(frac=frac, random_state=42)  # Use random_state for reproducibility
+        
+        # Separate X (features) and y (labels) after merging
+        y_df = data[['_MICHD']]
+        X_df = data.drop(columns=['_MICHD'])
+        
+        # Convert -1, 1 targets to 0, 1 targets using .loc to avoid SettingWithCopyWarning
+        y_df.loc[:, '_MICHD'] = y_df['_MICHD'].replace({-1: 0, 1: 1})
+
+        return X_df, y_df
     
-    # Load the y (target) data from the other CSV file
-    y_df = pd.read_csv(y_path)
-    
-    # Optional: Merge both DataFrames on 'Id' column to ensure correct alignment
-    data = pd.merge(X_df, y_df, on='Id')
-    
-    # Select only a fraction of the data if needed
-    if 0 < frac < 1:
-        data = data.sample(frac=frac, random_state=42)  # Use random_state for reproducibility
-    
-    # Separate X (features) and y (labels) after merging
-    y_df = data[['_MICHD']]
-    X_df = data.drop(columns=['_MICHD'])
-    
-    # Convert -1, 1 targets to 0, 1 targets using .loc to avoid SettingWithCopyWarning
-    y_df.loc[:, '_MICHD'] = y_df['_MICHD'].replace({-1: 0, 1: 1})
-    
-    return X_df, y_df
+    # If y_path is None (for test data), return only X_df and None for y_df
+    else:
+        # Select only a fraction of the data if needed
+        if 0 < frac < 1:
+            X_df = X_df.sample(frac=frac, random_state=42)  # Use random_state for reproducibility
+        
+        return X_df, None
 
 def clean_and_standardize(X, y):
     """
