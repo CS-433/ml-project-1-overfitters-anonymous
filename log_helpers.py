@@ -231,3 +231,61 @@ def cross_validation_reg_log(y, tx, k_fold, lambdas, max_iters, gamma):
     best_lambda = lambdas[np.argmin(losses_te)]
         
     return lambdas, losses_tr, losses_te
+
+import os
+
+def save_array_as_csv(array, array_name, directory_path, precision=10):
+    """
+    Saves a given NumPy array as a CSV file at a specified directory.
+    
+    The CSV file is named based on the variable name provided (array_name).
+    If the directory does not exist, it is created automatically.
+    
+    Parameters:
+    -----------
+    array : numpy.ndarray
+        The NumPy array to be saved.
+        
+    array_name : str
+        The name of the array (used to name the CSV file).
+        
+    directory_path : str
+        The path where the CSV file will be saved. The directory will be created
+        if it does not already exist.
+        
+    precision : int, optional
+        The number of decimal places to use when saving the array. Default is 10.
+    
+    Returns:
+    --------
+    str
+        The full path to the saved CSV file.
+    
+    Raises:
+    -------
+    ValueError
+        If the input is not a valid NumPy array.
+    
+    Example:
+    --------
+    >>> lambdas = np.array([0.1, 0.01, 0.001])
+    >>> save_array_as_csv(lambdas, 'lambdas', './results')
+    './results/lambdas.csv'
+    """
+    
+    # Ensure the input is a NumPy array
+    if not isinstance(array, np.ndarray):
+        raise ValueError("The provided input is not a valid NumPy array.")
+    
+    # Create the directory if it does not exist
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+    
+    # Construct the full file path
+    file_path = os.path.join(directory_path, f'{array_name}.csv')
+    
+    # Save the array as CSV with specified precision
+    np.savetxt(file_path, array, delimiter=",", fmt=f'%.{precision}f')
+    
+    # Return the full path to the saved file
+    return file_path
