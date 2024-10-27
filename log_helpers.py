@@ -289,3 +289,41 @@ def save_array_as_csv(array, array_name, directory_path, precision=10):
     
     # Return the full path to the saved file
     return file_path
+
+def safe_results(w, path_X, path, name):
+    """
+    Computes prediction of tx with w and saves them at given path under name.
+    
+    Args:
+        path_X: str; path to CSV with the unnormalized test data
+        w: np.array; weights from optimization
+        
+    Returns:
+        y, file_path: The array of predictions and the path to the saved file.
+    """
+    # Load the x data from the path
+    X, _ = load_csv_data(path_X)
+    
+    # Assuming y is loaded with X; if not, we only standardize X
+    tx, _ = clean_and_standardize(X, y=None)
+    y = np.sign(tx @ w)
+    y_int = y.astype(int)
+    
+    # Extract 'Id' column from X (assuming it's a DataFrame)
+    y_Ids = X['Id'].to_numpy()
+    
+    # Combine y_Ids and y_int as columns for saving
+    results = np.column_stack((y_Ids, y_int))
+    
+    # Create the directory if it does not exist
+    if not os.path.exists(path):
+        os.makedirs(path)
+    
+    # Construct the full file path
+    file_path = os.path.join(path, f'{name}.csv')
+    
+    # Save the results as CSV with specified precision for `y_int`
+    np.savetxt(file_path, results, fmt=['%i', '%i'], delimiter=",", header="Id,Prediction", comments='')
+    
+    # Return y values and the full path to the saved file
+    return y, file_path
