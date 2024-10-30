@@ -389,7 +389,7 @@ def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
 
 
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-    threshold = 1e-8
+    threshold = 1e-9
     losses = []
 
     # build tx

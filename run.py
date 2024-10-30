@@ -162,7 +162,7 @@ gamma = 0.5  # Learning rate
 final_w, final_loss = reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma)
 
 # Safe results
-path = '.\\final_results' 
+path = '' # .\\final_results ; alternative that worked
 name = 'resuts'
 X_path = 'data\\x_test.csv'
 y, _ = safe_results(final_w, X_path, path, name)
