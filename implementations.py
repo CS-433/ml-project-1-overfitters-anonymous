@@ -161,7 +161,7 @@ def learning_by_newton_method(y, tx, w, gamma):
     >>> tx = np.random.rand(4, 3)
     >>> w = np.array([[0.1], [0.5], [0.5]])
     >>> gamma = 0.1
-    >>> loss, w = learning_by_newton_method(y, tx, w, gamma)
+    >>> w, loss = learning_by_newton_method(y, tx, w, gamma)
     >>> round(loss, 8)
     0.71692036
     >>> w
@@ -244,7 +244,7 @@ def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     >>> w = np.array([[0.1], [0.2], [0.3]])
     >>> lambda_ = 0.1
     >>> gamma = 0.1
-    >>> loss, w = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
+    >>> w, loss = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
     >>> round(loss, 8)
     0.62137268
     >>> w
@@ -256,7 +256,7 @@ def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     loss, gradient = penalized_logistic_regression(y.reshape(-1, 1), tx, w, lambda_)
     w -= gamma * gradient
     
-    return loss, w
+    return w, loss
 
 
 #### Main Functions ##################
@@ -280,7 +280,7 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-10, verbose=
         w_next = w - gamma*grad
         if verbose:
             print("GD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=step_count, ti=max_iters - 1, l=loss, w0=w_next[0], w1=w_next[1]))
-    return loss, w_next
+    return w, loss
 
 
 def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma, verbose=False) :
@@ -296,7 +296,7 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma, verbose=False) :
 
         if verbose:
             print("SGD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=n, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
-    return loss, w
+    return w, loss
 
 
 def least_squares(y, tx):
@@ -398,7 +398,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     # start the logistic regression
     for iter in range(max_iters):
         # get loss and update w.
-        loss, w = log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
+        w, loss = log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
         # log info
         if iter % 100 == 0:
             print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
