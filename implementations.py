@@ -312,7 +312,7 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-12, verbose=
     w = initial_w
     for n in range(max_iters+1):
         grad, e = compute_grad(y, tx, w)
-        loss = calculate_mse(e)
+        loss = compute_MSE(e)
         
         # GD step
         w = w - gamma*grad
