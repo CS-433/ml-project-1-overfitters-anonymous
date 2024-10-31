@@ -10,4 +10,4 @@ This folder contains the necessary files of Project 1 for the course CS-433.
 
 - **run.py** : The script contained in this file reproduces exactly the .csv predictions (see final_results folder) generated with our ML methods. More specifically, it performs
 - **Project_1_Report.pdf** : In this this report, the main problem is first briefly explained. Then, the methodology is developped and the results are illustrated
-- **final_results** :
+- **final_results** : This folder contains one .csv file, which represents the prediction obtained thanks to our model. The individuals are denoted by "Id" and th predictions are labeled by {-1,+1} depending if a potential heart attack is predicted or not, respectively.
