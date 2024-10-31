@@ -86,7 +86,7 @@ def cross_validation(y, tx, k_indices, k, lambda_, gamma, max_iters):
     y_train = y[k_train]
     initial_w = np.zeros((tx.shape[1], 1))
 
-    w, _ = reg_logistic_regression(y_train, tx_train, lambda_, initial_w, max_iters, gamma)
+    w, _ = reg_logistic_regression_cheat(y_train, tx_train, lambda_, initial_w, max_iters, gamma)
     loss_tr = calculate_loss_log(y_train, tx_train, w)
     loss_te = calculate_loss_log(y_test, tx_test, w)
     return loss_tr, loss_te
@@ -159,7 +159,7 @@ max_iters = 5000  # Number of iterations
 gamma = 1  # Learning rate
 
 # Doing regularized logistic regression
-final_w, final_loss = reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma)
+final_w, final_loss = reg_logistic_regression_cheat(y, tx, lambda_, initial_w, max_iters, gamma)
 
 # Safe results
 path = '.\\final_results'

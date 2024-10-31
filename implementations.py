@@ -357,12 +357,98 @@ def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
     Args:
         y:            shape=(N, 1)
         tx:           shape=(N, D+1)
-        initial_w:    shape=(D+1, 1)
+        initial_w:    shape=(D+1, )
         max_iter:     int
         gamma:        float
         
     Returns: 
-        w:         shape=(D+1, 1)
+        w:         shape=(D+1, )
+        loss:      loss at final w
+        
+    Example:
+    w_final, losses = logistic_regression(y, tx, initial_w, max_iter, gamma)
+    
+    
+    """
+    losses = []
+    w = initial_w.reshape(-1, 1)
+
+    # start the logistic regression
+    for iter in range(max_iter):
+        # get loss and update w.
+        w, loss = learning_by_newton_method(y, tx, w, gamma)
+        losses.append(loss)
+        
+        # converge criterion
+        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
+            break
+            
+    print("loss={l}".format(l=compute_loss(y, tx, w)))
+    
+    return w.ravel(), loss
+
+
+def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
+    threshold = 1e-9
+    losses = []
+
+    # build tx
+    w = initial_w.reshape(-1, 1)
+
+    # start the logistic regression
+    for iter in range(max_iters):
+        # get loss and update w.
+        w, loss = log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
+        # log info
+        if iter % 100 == 0:
+            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        # converge criterion
+        losses.append(loss)
+        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
+            break
+    
+    print("Lambda={lam}, Training loss={l}".format(lam=lambda_, l=loss))
+    return w.ravel(), loss
+
+
+# Additional stuff
+
+def reg_logistic_regression_cheat(y, tx, lambda_, initial_w, max_iters, gamma):
+    threshold = 1e-9
+    losses = []
+
+    # build tx
+    w = initial_w
+
+    # start the logistic regression
+    for iter in range(max_iters):
+        # get loss and update w.
+        w, loss = log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
+        # log info
+        if iter % 100 == 0:
+            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
+        # converge criterion
+        losses.append(loss)
+        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
+            break
+    
+    print("Lambda={lam}, Training loss={l}".format(lam=lambda_, l=loss))
+    return w, loss
+
+
+def logistic_regression_cheat(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
+    """
+    Do logistic regression until the threshold or max_iter is reached.
+    
+    Args:
+        y:            shape=(N, 1)
+        tx:           shape=(N, D+1)
+        initial_w:    shape=(D+1, )
+        max_iter:     int
+        gamma:        float
+        
+    Returns: 
+        w:         shape=(D+1, )
         loss:      loss at final w
         
     Example:
@@ -386,29 +472,5 @@ def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
     print("loss={l}".format(l=compute_loss(y, tx, w)))
     
     return w, loss
-
-
-def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-    threshold = 1e-9
-    losses = []
-
-    # build tx
-    w = initial_w
-
-    # start the logistic regression
-    for iter in range(max_iters):
-        # get loss and update w.
-        w, loss = log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
-        # log info
-        if iter % 100 == 0:
-            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
-        # converge criterion
-        losses.append(loss)
-        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
-            break
-    
-    print("Lambda={lam}, Training loss={l}".format(lam=lambda_, l=loss))
-    return w, loss
-
 
 
