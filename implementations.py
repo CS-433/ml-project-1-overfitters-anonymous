@@ -41,7 +41,7 @@ def compute_loss(y, tx, w):
 def compute_grad(y, tx, w):
     # computes the gradient at w.
     e = y - tx.dot(w) # the error vector
-    gradient = (-1/len(y))*tx.T.dot(e)
+    gradient = (-1/len(y))*(tx.T).dot(e)
     return gradient, e
 
 
@@ -261,7 +261,7 @@ def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
 
 #### Main Functions ##################
 
-def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-12, verbose=False):
+def mean_squared_error_gd_original(y, tx, initial_w, max_iters, gamma,tol=1e-12, verbose=False):
     """The Gradient Descent (GD) algorithm.
     Args:
         y: numpy array of shape=(N, )
@@ -293,6 +293,32 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-12, verbose=
         if verbose:
             print("GD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=step_count, ti=max_iters - 1, l=loss, w0=w_next[0], w1=w_next[1]))
     return w_next, loss
+
+
+def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-12, verbose=False):
+    """The Gradient Descent (GD) algorithm.
+    Args:
+        y: numpy array of shape=(N, )
+        tx: numpy array of shape=(N,2)
+        initial_w: numpy array of shape=(2, ). The initial guess (or the initialization) for the model parameters
+        max_iters: a scalar denoting the total number of iterations of GD
+        gamma: a scalar denoting the stepsize
+        tol: gives tolerance
+        verbose: if true, prints useful information for debugging
+    Returns:
+        losses: a list of length max_iters containing the loss value (scalar) for each iteration of GD
+        ws: a list of length max_iters containing the model parameters as numpy arrays of shape (2, ), for each iteration of GD
+    """
+    w = initial_w
+    for n in range(max_iters):
+        grad, e = compute_gradient(y, tx, w)
+        loss = calculate_mse(e)
+        
+        # GD step
+        w = w - gamma*grad
+
+    return w, loss
+
 
 
 def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma, verbose=False) :
