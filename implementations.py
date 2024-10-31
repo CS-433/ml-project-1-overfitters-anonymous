@@ -350,7 +350,7 @@ def ridge_regression(y, tx, lambda_):
     return w, loss
 
 
-def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
+def logistic_regression_original(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
     """
     Do logistic regression until the threshold or max_iter is reached.
     
@@ -382,6 +382,43 @@ def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
         # converge criterion
         if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
             break
+            
+    print("loss={l}".format(l=compute_loss(y, tx, w)))
+    
+    return w.ravel(), loss
+
+def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
+    """
+    Do logistic regression until the threshold or max_iter is reached.
+    
+    Args:
+        y:            shape=(N, 1)
+        tx:           shape=(N, D+1)
+        initial_w:    shape=(D+1, )
+        max_iter:     int
+        gamma:        float
+        
+    Returns: 
+        w:         shape=(D+1, )
+        loss:      loss at final w
+        
+    Example:
+    w_final, losses = logistic_regression(y, tx, initial_w, max_iter, gamma)
+    
+    
+    """
+    losses = []
+    w = initial_w.reshape(-1, 1)
+
+    # get loss and update w.
+        w, loss = learning_by_newton_method(y, tx, w, gamma)
+        losses.append(loss)
+
+    # start the logistic regression
+    while (len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold) and iter < max_iter:
+        # get loss and update w.
+        w, loss = learning_by_newton_method(y, tx, w, gamma)
+        losses.append(loss)
             
     print("loss={l}".format(l=compute_loss(y, tx, w)))
     
