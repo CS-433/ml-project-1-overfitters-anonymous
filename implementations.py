@@ -284,7 +284,7 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-12, verbose=
 
     # make steps in the opposite direction of the gradient and stops if the parameters does not vary anymore ( i.e. we reached a minimum ), or if the maximum iteration number is reached. 
     step_count = 0 # the counter of steps
-    while step_count < max_iters and np.linalg.norm(w - w_next) > tol : # we could also instead check the condition abs(grad) > tol since we expect grad = 0 at minimum.
+    while step_count < max_iters:#and np.linalg.norm(w - w_next) > tol : # we could also instead check the condition abs(grad) > tol since we expect grad = 0 at minimum.
         step_count += 1
         w = w_next # w(t) is the w(t+1) of the step before. 
         grad, e = compute_grad(y, tx, w)
