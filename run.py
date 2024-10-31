@@ -99,7 +99,7 @@ def cross_validation_reg_log(y, tx, k_fold, lambdas, max_iters, gamma):
     for lambda_ in lambdas:
         loss_temp_train = 0
         loss_temp_test = 0
-        seed = np.random.randint(0, 10000)
+        seed = 0  #np.random.randint(0, 10000)
         k_indices = build_k_indices(y, k_fold, seed)
         
         for k in range(k_fold):
@@ -155,14 +155,14 @@ tx, y = clean_and_standardize(X, y)
 # Setting the inital parameters, lambda was the best one from cross validation
 lambda_ = 1.4677992676220705e-06
 initial_w = np.zeros((tx.shape[1], 1))
-max_iters = 100000  # Number of iterations
-gamma = 0.5  # Learning rate
+max_iters = 10000  # Number of iterations
+gamma = 1  # Learning rate
 
 # Doing regularized logistic regression
 final_w, final_loss = reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma)
 
 # Safe results
-path = '' # .\\final_results ; alternative that worked
+path = '.\\final_results'
 name = 'resuts'
 X_path = 'data\\x_test.csv'
 y, _ = safe_results(final_w, X_path, path, name)
