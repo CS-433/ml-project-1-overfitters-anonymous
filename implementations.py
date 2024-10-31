@@ -261,7 +261,7 @@ def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
 
 #### Main Functions ##################
 
-def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-10, verbose=False):
+def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-12, verbose=False):
 
     # compute the first step
     # w(t+1) (i.e. w at step t+1) is written w_next, and w(t) (i.e. w at step t) is written w. 
