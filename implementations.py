@@ -310,7 +310,7 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-12, verbose=
         ws: a list of length max_iters containing the model parameters as numpy arrays of shape (2, ), for each iteration of GD
     """
     w = initial_w
-    for n in range(max_iters):
+    for n in range(max_iters+1):
         grad, e = compute_gradient(y, tx, w)
         loss = calculate_mse(e)
         
