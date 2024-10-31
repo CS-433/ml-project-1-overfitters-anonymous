@@ -280,7 +280,7 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-10, verbose=
         w_next = w - gamma*grad
         if verbose:
             print("GD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=step_count, ti=max_iters - 1, l=loss, w0=w_next[0], w1=w_next[1]))
-    return w, loss
+    return w_next, loss
 
 
 def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma, verbose=False) :
