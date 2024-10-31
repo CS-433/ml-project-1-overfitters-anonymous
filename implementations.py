@@ -262,7 +262,19 @@ def log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
 #### Main Functions ##################
 
 def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-12, verbose=False):
-
+    """The Gradient Descent (GD) algorithm.
+    Args:
+        y: numpy array of shape=(N, )
+        tx: numpy array of shape=(N,2)
+        initial_w: numpy array of shape=(2, ). The initial guess (or the initialization) for the model parameters
+        max_iters: a scalar denoting the total number of iterations of GD
+        gamma: a scalar denoting the stepsize
+        tol: gives tolerance
+        verbose: if true, prints useful information for debugging
+    Returns:
+        losses: a list of length max_iters containing the loss value (scalar) for each iteration of GD
+        ws: a list of length max_iters containing the model parameters as numpy arrays of shape (2, ), for each iteration of GD
+    """
     # compute the first step
     # w(t+1) (i.e. w at step t+1) is written w_next, and w(t) (i.e. w at step t) is written w. 
     w = initial_w
@@ -284,7 +296,18 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-12, verbose=
 
 
 def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma, verbose=False) :
-
+    """The Stochastic Gradient Descent algorithm (SGD).
+    Args:
+        y: numpy array of shape=(N, )
+        tx: numpy array of shape=(N,2)
+        initial_w: numpy array of shape=(2, ). The initial guess (or the initialization) for the model parameters
+        max_iters: a scalar denoting the total number of iterations of SGD
+        gamma: a scalar denoting the stepsize
+        verbose: if true, prints useful information for debugging
+    Returns:
+        losses: a list of length max_iters containing the loss value (scalar) for each iteration of SGD
+        ws: a list of length max_iters containing the model parameters as numpy arrays of shape (2, ), for each iteration of SGD
+    """
     w = initial_w
 
     for n in range(max_iters):
@@ -389,6 +412,19 @@ def logistic_regression(y, tx, initial_w, max_iter, gamma, threshold = 1e-8):
 
 
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
+    """
+    Args:
+        y:            shape=(N, 1)
+        tx:           shape=(N, D+1)
+        initial_w:    shape=(D+1, )
+        max_iters:     int
+        gamma:        float
+        
+    Returns: 
+        w:         shape=(D+1, )
+        loss:      loss at final w
+    """
+    
     threshold = 1e-9
     losses = []
 
