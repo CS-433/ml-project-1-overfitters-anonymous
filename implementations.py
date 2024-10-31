@@ -423,7 +423,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     w = initial_w.reshape(-1, 1)
 
     # start the logistic regression
-    for iter in range(max_iters):
+    for iter in range(max_iters+1):
         # get loss and update w.
         w, loss = log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
         # log info
@@ -448,7 +448,7 @@ def reg_logistic_regression_cheat(y, tx, lambda_, initial_w, max_iters, gamma):
     w = initial_w
 
     # start the logistic regression
-    for iter in range(max_iters):
+    for iter in range(max_iters+1):
         # get loss and update w.
         w, loss = log_learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
         # log info
@@ -487,7 +487,7 @@ def logistic_regression_cheat(y, tx, initial_w, max_iter, gamma, threshold = 1e-
     w = initial_w
 
     # start the logistic regression
-    for iter in range(max_iter):
+    for iter in range(max_iter+1):
         # get loss and update w.
         w, loss = learning_by_newton_method(y, tx, w, gamma)
         losses.append(loss)
