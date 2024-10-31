@@ -155,7 +155,7 @@ tx, y = clean_and_standardize(X, y)
 # Setting the inital parameters, lambda was the best one from cross validation
 lambda_ = 1.4677992676220705e-06
 initial_w = np.zeros((tx.shape[1], 1))
-max_iters = 10000  # Number of iterations
+max_iters = 5000  # Number of iterations
 gamma = 1  # Learning rate
 
 # Doing regularized logistic regression
