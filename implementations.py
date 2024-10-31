@@ -275,24 +275,15 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma,tol=1e-12, verbose=
         losses: a list of length max_iters containing the loss value (scalar) for each iteration of GD
         ws: a list of length max_iters containing the model parameters as numpy arrays of shape (2, ), for each iteration of GD
     """
-    # compute the first step
-    # w(t+1) (i.e. w at step t+1) is written w_next, and w(t) (i.e. w at step t) is written w. 
     w = initial_w
-    grad, e = compute_grad(y, tx, w)
-    loss = compute_MSE(e)
-    w_next = w - gamma*grad
-
-    # make steps in the opposite direction of the gradient and stops if the parameters does not vary anymore ( i.e. we reached a minimum ), or if the maximum iteration number is reached. 
-    step_count = 1 # the counter of steps
-    while step_count < max_iters:#and np.linalg.norm(w - w_next) > tol : # we could also instead check the condition abs(grad) > tol since we expect grad = 0 at minimum.
-        step_count += 1
-        w = w_next # w(t) is the w(t+1) of the step before. 
+    for n in range(max_iters+1):
         grad, e = compute_grad(y, tx, w)
         loss = compute_MSE(e)
-        w_next = w - gamma*grad
-        if verbose:
-            print("GD iter. {bi}/{ti}: loss={l}, w0={w0}, w1={w1}".format(bi=step_count, ti=max_iters - 1, l=loss, w0=w_next[0], w1=w_next[1]))
-    return w_next, loss
+        
+        # GD step
+        w = w - gamma*grad
+
+    return w, loss
 
 
 def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma, verbose=False) :
